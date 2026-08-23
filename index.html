@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore The Globe - Interactive 3D WebGL Earth explorer. Discover countries, geography, places, food, culture, history, and facts in real-time.">
+    <title>Explore The Globe | 3D Interactive Earth</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Star background canvas — drawn once, fixed behind globe -->
+        <canvas id="star-canvas"></canvas>
+
+        <!-- 3D WebGL Globe Canvas Container -->
+        <div id="globe-canvas-container"></div>
+
+        <!-- App Header Bar -->
+        <header class="app-header">
+            <div class="brand-logo">
+                <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10z"></path>
+                </svg>
+                <span class="brand-title">Explore The Globe</span>
+            </div>
+        </header>
+
+        <!-- Search & Filter Controls -->
+        <div class="search-filter-bar">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="search-input" class="search-input" placeholder="Search any country (e.g. India, Japan, Brazil)..." autocomplete="off">
+                <div id="autocomplete-list" class="autocomplete-list"></div>
+            </div>
+            
+            <div id="continent-chips" class="continent-chips"></div>
+        </div>
+
+        <!-- Globe Control HUD -->
+        <div class="globe-hud">
+            <button id="btn-zoom-in" class="hud-btn" title="Zoom In">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            <button id="btn-zoom-out" class="hud-btn" title="Zoom Out">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            <button id="btn-reset-view" class="hud-btn" title="Reset Camera View">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                </svg>
+            </button>
+            <button id="btn-rotate-toggle" class="hud-btn" title="Toggle Auto Rotation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+            </button>
+            <button id="btn-random-country" class="hud-btn" title="Explore Random Country">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Country Tooltip -->
+        <div id="globe-tooltip" class="globe-tooltip">
+            <span id="tooltip-flag"></span>
+            <span id="tooltip-name"></span>
+        </div>
+
+        <!-- Interactive Country Explorer Side Panel / Drawer -->
+        <aside id="country-drawer" class="country-drawer">
+            <div class="drawer-header-accent" id="drawer-accent"></div>
+            
+            <div class="drawer-header">
+                <div class="country-title-group">
+                    <div class="country-flag-name">
+                        <span id="drawer-flag" class="country-flag"></span>
+                        <h2 id="drawer-name" class="country-name">Select a Country</h2>
+                    </div>
+                    <p id="drawer-official" class="country-official"></p>
+                </div>
+                <button id="btn-close-drawer" class="close-btn" aria-label="Close panel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="drawer-content">
+                <!-- Quick Key Statistics Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Capital</span>
+                        <span id="stat-capital" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Region</span>
+                        <span id="stat-region" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Subregion</span>
+                        <span id="stat-subregion" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Population</span>
+                        <span id="stat-population" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Currency</span>
+                        <span id="stat-currency" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">ISO Alpha-2 / 3</span>
+                        <span id="stat-iso-codes" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-card full-width">
+                        <span class="stat-label">Official Languages</span>
+                        <span id="stat-languages" class="stat-value">-</span>
+                    </div>
+                </div>
+
+                <!-- Rich Exploration Category Tabs Navigation -->
+                <nav class="section-tabs-bar">
+                    <button class="section-tab active" data-tab="places">🏛️ Places</button>
+                    <button class="section-tab" data-tab="food">🍜 Food</button>
+                    <button class="section-tab" data-tab="culture">🎭 Culture</button>
+                    <button class="section-tab" data-tab="history">📜 History</button>
+                    <button class="section-tab" data-tab="facts">🤯 Facts</button>
+                </nav>
+
+                <!-- Dynamic Tab Content Display Container -->
+                <div id="drawer-section-content" class="drawer-section-content"></div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Main ES Module Application -->
+    <script type="module" src="js/app.js"></script>
+
+    <!-- Stars: draw once to canvas, fixed space background -->
+    <script>
+    (function() {
+        function drawStars() {
+            var canvas = document.getElementById('star-canvas');
+            if (!canvas) return;
+            var W = window.innerWidth;
+            var H = window.innerHeight;
+            canvas.width  = W;
+            canvas.height = H;
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, W, H);
+
+            // ~350 stars, varied sizes and brightness
+            var N = 350;
+            for (var i = 0; i < N; i++) {
+                var x    = Math.random() * W;
+                var y    = Math.random() * H;
+                // Most stars are tiny (0.3-1px), a few are slightly larger
+                var r    = Math.random() < 0.85 ? Math.random() * 0.7 + 0.3
+                                                : Math.random() * 1.0 + 1.0;
+                var base = Math.random() * 0.55 + 0.35;  // 0.35–0.90 opacity
+
+                // Slight colour variation: pure white to blue-white
+                var blue = Math.floor(Math.random() * 56 + 200); // 200-255
+                var color = 'rgba(' + blue + ',' + blue + ',255,' + base.toFixed(2) + ')';
+
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+
+            // A few faint slightly-larger "bright" stars with a soft glow
+            for (var j = 0; j < 12; j++) {
+                var bx = Math.random() * W;
+                var by = Math.random() * H;
+                var br = Math.random() * 1.2 + 1.0;
+                var grad = ctx.createRadialGradient(bx, by, 0, bx, by, br * 3);
+                grad.addColorStop(0,   'rgba(255,255,255,0.9)');
+                grad.addColorStop(0.4, 'rgba(200,220,255,0.4)');
+                grad.addColorStop(1,   'rgba(0,0,0,0)');
+                ctx.beginPath();
+                ctx.arc(bx, by, br * 3, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+            }
+        }
+
+        // Draw immediately and redraw on resize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', drawStars);
+        } else {
+            drawStars();
+        }
+        window.addEventListener('resize', drawStars);
+    })();
+    </script>
+</body>
+</html>
