@@ -806,6 +806,17 @@ body, html {
         top: 70px;
     }
 
+    .globe-hud {
+        bottom: 74px;
+        right: 16px;
+        gap: 8px;
+    }
+
+    .hud-btn {
+        width: 40px;
+        height: 40px;
+    }
+
     .country-drawer {
         width: calc(100% - 32px);
         right: 16px;
@@ -819,4 +830,157 @@ body, html {
     .country-drawer.open {
         transform: translateY(0);
     }
+
+    .app-footer {
+        bottom: 12px;
+        width: calc(100% - 32px);
+        max-width: 380px;
+        padding: 7px 16px 6px;
+    }
+
+    .footer-credit-text {
+        font-size: 0.77rem;
+    }
+
+    .footer-copyright {
+        font-size: 0.68rem;
+    }
 }
+
+@media (max-width: 400px) {
+    .app-footer {
+        padding: 6px 12px 5px;
+    }
+
+    .footer-credit-text {
+        font-size: 0.73rem;
+    }
+
+    .footer-copyright {
+        font-size: 0.65rem;
+    }
+
+    .globe-hud {
+        bottom: 68px;
+        right: 12px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Premium Creator Credit Footer Dock
+   ───────────────────────────────────────────────────────────── */
+.app-footer {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 8px 24px 7px;
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-full);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(56, 176, 0, 0.12);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    user-select: none;
+}
+
+.app-footer:hover {
+    border-color: rgba(0, 255, 135, 0.45);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 0 26px rgba(0, 255, 135, 0.18);
+}
+
+.footer-credit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.footer-credit-text {
+    font-family: var(--font-body);
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    letter-spacing: 0.2px;
+}
+
+.footer-copyright {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+}
+
+/* Creator Name Link & Aurora Cosmic Shimmer Effect */
+.creator-link {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: 700;
+    text-decoration: none;
+    color: #ffffff;
+    background: linear-gradient(120deg, #ffffff 0%, var(--accent-emerald) 35%, var(--accent-cyan) 70%, #ffffff 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: auroraShimmer 6s linear infinite;
+    transition: filter 0.3s ease, transform 0.2s ease;
+    padding: 0 1px;
+}
+
+.creator-link::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    width: 0;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-emerald), var(--accent-cyan));
+    border-radius: var(--radius-full);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.creator-link:hover {
+    filter: drop-shadow(0 0 6px rgba(0, 255, 135, 0.55));
+    transform: translateY(-0.5px);
+}
+
+.creator-link:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+.creator-link:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+@keyframes auroraShimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .creator-link {
+        animation: none;
+    }
+}
+
